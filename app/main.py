@@ -1,7 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-app = FastAPI()
+app = FastAPI(
+    title="FlyRank Task API",
+    description="A simple CRUD API built with FastAPI for the FlyRank Backend Internship Assignment.",
+    version="1.0.0"
+)
 
 class TaskCreate(BaseModel):
     title : str
@@ -28,7 +32,11 @@ tasks = [
     }
 ]
 
-@app.get("/")
+@app.get(
+    "/",
+    summary="Get API Information",
+    description="Returns basic information about the Task API."
+)
 def root():
     return {
         "name": "Task API",
@@ -39,17 +47,29 @@ def root():
     }
 
 
-@app.get("/health")
+@app.get(
+    "/health",
+    summary="Health Check",
+    description="Checks whether the server is running."
+)
 def health():
     return {
         "status": "ok"
     }
 
-@app.get("/tasks")
+@app.get(
+    "/tasks",
+    summary="Get All Tasks",
+    description="Returns all available tasks."
+)
 def get_tasks() :
     return tasks
 
-@app.get("/tasks/{id}")
+@app.get(
+    "/tasks/{id}",
+    summary="Get Task by ID",
+    description="Returns a single task using its ID."
+)
 def get_task(id : int) :
     for task in tasks:
         if task["id"] == id:
@@ -60,7 +80,12 @@ def get_task(id : int) :
         detail=f"Task {id} not found"
     )    
 
-@app.post("/tasks", status_code=201)
+@app.post(
+    "/tasks",
+    status_code=201,
+    summary="Create Task",
+    description="Creates a new task."
+)
 def create_task(task : TaskCreate):
     if task.title.strip() == "" :
         raise HTTPException(
@@ -78,7 +103,11 @@ def create_task(task : TaskCreate):
     return tasks
 
 
-@app.put("/tasks/{id}")
+@app.put(
+    "/tasks/{id}",
+    summary="Update Task",
+    description="Updates an existing task."
+)
 def update_task(id : int, updated_task : TaskUdate):
     for task in tasks:
         if task["id"] == id:
@@ -100,7 +129,12 @@ def update_task(id : int, updated_task : TaskUdate):
     )
 
 
-@app.delete("/tasks/{id}", status_code=204)
+@app.delete(
+    "/tasks/{id}",
+    status_code=204,
+    summary="Delete Task",
+    description="Deletes a task by ID."
+)
 def delete_task(id: int):
     for index, task in enumerate(tasks):
         if task["id"] == id:
