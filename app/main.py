@@ -6,6 +6,10 @@ app = FastAPI()
 class TaskCreate(BaseModel):
     title : str
 
+class TaskUdate(BaseModel):
+    title : str
+    done : bool    
+
 tasks = [
     {
         "id": 1,
@@ -72,3 +76,38 @@ def create_task(task : TaskCreate):
 
     tasks.append(new_taks)
     return tasks
+
+
+@app.put("/tasks/{id}")
+def update_task(id : int, updated_task : TaskUdate):
+    for task in tasks:
+        if task["id"] == id:
+
+            if updated_task.title.strip() == "":
+                raise HTTPException(
+                    status_code=400,
+                    detail="Title cannot be empty"
+                )
+
+            task["title"] = updated_task.title
+            task["done"] = updated_task.done
+
+            return task
+
+    raise HTTPException(
+        status_code=404,
+        detail=f"Task {id} not found"
+    )
+
+
+@app.delete("/tasks/{id}", status_code=204)
+def delete_task(id: int):
+    for index, task in enumerate(tasks):
+        if task["id"] == id:
+            tasks.pop(index)
+            return
+
+    raise HTTPException(
+        status_code=404,
+        detail=f"Task {id} not found"
+    )
