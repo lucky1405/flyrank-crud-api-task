@@ -30,19 +30,19 @@ A simple RESTful CRUD API built using **FastAPI** for the FlyRank Backend Intern
 Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/flyrank-task-api.git
+git clone https://github.com/lucky1405/flyrank-crud-api-task.git
 ```
 
 Move inside the project
 
 ```bash
-cd flyrank-task-api
+cd flyrank_crud_api_task
 ```
 
 Create Virtual Environment
 
 ```bash
-python3 -m venv venv
+python3 -m venv virtual
 ```
 
 Activate it
