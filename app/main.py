@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from app.database import initialize_database, get_all_tasks, get_task_by_id, create_task_db
+from app.database import initialize_database, get_all_tasks, get_task_by_id, create_task_db, update_task_db, delete_task_db
 
 app = FastAPI(
     title="FlyRank Task API",
@@ -122,24 +122,25 @@ def create_task(task : TaskCreate):
     description="Updates an existing task."
 )
 def update_task(id : int, updated_task : TaskUdate):
-    for task in tasks:
-        if task["id"] == id:
+    if updated_task.title.strip() == "":
+        raise HTTPException(
+            status_code=400,
+            detail="Title cannot be empty"
+        )
 
-            if updated_task.title.strip() == "":
-                raise HTTPException(
-                    status_code=400,
-                    detail="Title cannot be empty"
-                )
-
-            task["title"] = updated_task.title
-            task["done"] = updated_task.done
-
-            return task
-
-    raise HTTPException(
-        status_code=404,
-        detail=f"Task {id} not found"
+    task = update_task_db(
+        id,
+        updated_task.title,
+        updated_task.done
     )
+
+    if task is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Task {id} not found"
+        )
+
+    return task
 
 
 @app.delete(
@@ -149,12 +150,10 @@ def update_task(id : int, updated_task : TaskUdate):
     description="Deletes a task by ID."
 )
 def delete_task(id: int):
-    for index, task in enumerate(tasks):
-        if task["id"] == id:
-            tasks.pop(index)
-            return
+    deleted = delete_task_db(id)
 
-    raise HTTPException(
-        status_code=404,
-        detail=f"Task {id} not found"
-    )
+    if not deleted:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Task {id} not found"
+        )

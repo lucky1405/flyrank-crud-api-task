@@ -92,3 +92,47 @@ def create_task_db(title : str):
         "title": row["title"],
         "done": bool(row["done"])
     }
+
+def update_task_db(task_id : int, title : str, done : bool):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+         """
+        UPDATE tasks
+        SET title = ?, done = ?
+        WHERE id = ?
+        """,
+        (title, int(done), task_id)
+    )
+
+    if cursor.rowcount == 0:
+        conn.close()
+        return None
+    
+    conn.commit()
+    cursor.execute(
+        "select * from tasks where id = ?",
+        (task_id,)
+    )
+    row = cursor.fetchone()
+    conn.close()
+
+    return {
+        "id": row["id"],
+        "title": row["title"],
+        "done": bool(row["done"])
+    }
+
+def delete_task_db(task_id : int):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "delete from tasks where id = ?",
+        (task_id,)
+    )
+    deleted = cursor.rowcount
+    conn.commit()
+    conn.close()
+    return deleted > 0
