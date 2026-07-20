@@ -1,11 +1,14 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from app.database import initialize_database
 
 app = FastAPI(
     title="FlyRank Task API",
     description="A simple CRUD API built with FastAPI for the FlyRank Backend Internship Assignment.",
     version="1.0.0"
 )
+
+initialize_database()
 
 class TaskCreate(BaseModel):
     title : str
