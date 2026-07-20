@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from app.database import initialize_database
+from app.database import initialize_database, get_all_tasks, get_task_by_id
 
 app = FastAPI(
     title="FlyRank Task API",
@@ -9,6 +9,7 @@ app = FastAPI(
 )
 
 initialize_database()
+
 
 class TaskCreate(BaseModel):
     title : str
@@ -66,7 +67,8 @@ def health():
     description="Returns all available tasks."
 )
 def get_tasks() :
-    return tasks
+    # return tasks
+    return get_all_tasks()
 
 @app.get(
     "/tasks/{id}",
@@ -74,14 +76,21 @@ def get_tasks() :
     description="Returns a single task using its ID."
 )
 def get_task(id : int) :
-    for task in tasks:
-        if task["id"] == id:
-            return task
+    # for task in tasks:
+    #     if task["id"] == id:
+    #         return task
         
-    raise HTTPException(
-        status_code=404,
-        detail=f"Task {id} not found"
-    )    
+    # raise HTTPException(
+    #     status_code=404,
+    #     detail=f"Task {id} not found"
+    # )    
+    task = get_all_tasks(id)
+    if task is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Task {id} not found"
+        )
+    return task
 
 @app.post(
     "/tasks",
