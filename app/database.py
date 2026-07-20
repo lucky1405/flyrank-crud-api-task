@@ -69,3 +69,26 @@ def get_task_by_id(task_id : id) :
         "title": row["title"],
         "done": bool(row["done"])
     }
+
+def create_task_db(title : str):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "insert into tasks (title,done) values (?,?)",
+        (title,0)
+    )
+    task_id = cursor.lastrowid
+    conn.commit()
+    cursor.execute(
+        "select * from tasks where id = ?",
+        (task_id,)
+    )
+    row = cursor.fetchone()
+    conn.close()
+
+    return {
+        "id": row["id"],
+        "title": row["title"],
+        "done": bool(row["done"])
+    }

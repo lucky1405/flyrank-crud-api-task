@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from app.database import initialize_database, get_all_tasks, get_task_by_id
+from app.database import initialize_database, get_all_tasks, get_task_by_id, create_task_db
 
 app = FastAPI(
     title="FlyRank Task API",
@@ -84,7 +84,7 @@ def get_task(id : int) :
     #     status_code=404,
     #     detail=f"Task {id} not found"
     # )    
-    task = get_all_tasks(id)
+    task = get_task_by_id(id)
     if task is None:
         raise HTTPException(
             status_code=404,
@@ -105,14 +105,15 @@ def create_task(task : TaskCreate):
             detail="Title cannot be empty"
         )
     
-    new_taks = {
-        "id" : len(tasks) + 1,
-        "title" : task.title,
-        "done" : False
-    }
+    # new_taks = {
+    #     "id" : len(tasks) + 1,
+    #     "title" : task.title,
+    #     "done" : False
+    # }
 
-    tasks.append(new_taks)
-    return tasks
+    # tasks.append(new_taks)
+    # return tasks
+    return create_task_db(task.title)
 
 
 @app.put(
