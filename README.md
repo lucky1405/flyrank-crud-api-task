@@ -1,31 +1,63 @@
-# FlyRank Task API
+# FlyRank CRUD API with SQLite
 
-A simple RESTful CRUD API built using **FastAPI** for the FlyRank Backend Internship Week 2 Assignment.
-
----
+A RESTful Task Management API built using **FastAPI** and **SQLite** as part of the FlyRank Backend Engineering Internship (Week 3 Assignment).
 
 ## Features
 
-- Create Tasks
-- Read All Tasks
-- Read Task by ID
-- Update Tasks
-- Delete Tasks
-- Built-in Swagger UI
-- Input Validation
-- Proper HTTP Status Codes
+- Create a task
+- Read all tasks
+- Read a task by ID
+- Update a task
+- Delete a task
+- Persistent SQLite database
+- Automatic database and table creation
+- Automatic seed data
+- Parameterized SQL queries
 
 ---
 
-## Tech Stack
+# Why SQLite?
+
+SQLite was chosen because:
+
+- It is lightweight.
+- It requires zero configuration.
+- The database is stored in a single file (`tasks.db`).
+- Data persists after restarting the application.
+
+---
+
+# Tech Stack
 
 - Python 3
 - FastAPI
+- SQLite
 - Uvicorn
 
 ---
 
-## Installation
+# Project Structure
+
+```text
+flyrank-crud-api-task
+│
+├── app
+│   ├── main.py
+│   ├── database.py
+│   └── tasks.db (created automatically)
+│
+├── images
+│   └── database.png
+│   └── swagger-ui.png
+│
+├── requirements.txt
+├── README.md
+└── .gitignore
+```
+
+---
+
+# Installation
 
 Clone the repository
 
@@ -33,13 +65,13 @@ Clone the repository
 git clone https://github.com/lucky1405/flyrank-crud-api-task.git
 ```
 
-Move inside the project
+Go inside the project
 
 ```bash
 cd flyrank_crud_api_task
 ```
 
-Create Virtual Environment
+Create a virtual environment
 
 ```bash
 python3 -m venv virtual
@@ -47,16 +79,10 @@ python3 -m venv virtual
 
 Activate it
 
-Mac/Linux
+macOS/Linux
 
 ```bash
-source venv/bin/activate
-```
-
-Windows
-
-```bash
-venv\Scripts\activate
+source virtual/bin/activate
 ```
 
 Install dependencies
@@ -65,70 +91,58 @@ Install dependencies
 pip install -r requirements.txt
 ```
 
----
-
-## Run Server
+Run the application
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-Server runs at
+The application automatically:
 
-```
-http://127.0.0.1:8000
-```
-
-Swagger UI
-
-```
-http://127.0.0.1:8000/docs
-```
+- Creates `tasks.db`
+- Creates the `tasks` table
+- Inserts three sample tasks (only on the first run)
 
 ---
 
-## API Endpoints
+# API Endpoints
 
 | Method | Endpoint | Description |
-|---------|----------|-------------|
-| GET | / | API Information |
-| GET | /health | Health Check |
-| GET | /tasks | Get All Tasks |
-| GET | /tasks/{id} | Get Task by ID |
-| POST | /tasks | Create Task |
-| PUT | /tasks/{id} | Update Task |
-| DELETE | /tasks/{id} | Delete Task |
+|--------|----------|-------------|
+| GET | `/tasks` | Get all tasks |
+| GET | `/tasks/{id}` | Get a task by ID |
+| POST | `/tasks` | Create a task |
+| PUT | `/tasks/{id}` | Update a task |
+| DELETE | `/tasks/{id}` | Delete a task |
 
 ---
 
-## Example curl
+# Example SQL Query
 
-```bash
-curl -i -X POST http://127.0.0.1:8000/tasks \
--H "Content-Type: application/json" \
--d '{"title":"Learn FastAPI"}'
+```sql
+SELECT * FROM tasks;
 ```
 
----
-
-## HTTP Status Codes
-
-| Code | Meaning |
-|------|----------|
-| 200 | Success |
-| 201 | Created |
-| 204 | No Content |
-| 400 | Bad Request |
-| 404 | Not Found |
+This query returns all tasks stored in the SQLite database.
 
 ---
 
-## Swagger UI
+# Database Screenshot
 
-![Swagger UI](images/swagger-ui.png)
+![Database](images/database.png)
 
 ---
 
-## Author
+# Future Improvements
+
+- Search tasks using SQL `LIKE`
+- Filter tasks by completion status
+- Sort tasks alphabetically
+- Add timestamps (`created_at`, `updated_at`)
+- Add pagination
+
+---
+
+# Author
 
 Lucky
