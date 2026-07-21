@@ -129,7 +129,7 @@ This query returns all tasks stored in the SQLite database.
 
 # Database Screenshot
 
-![Database](images/database.png)
+![Database](app/images/database.png)
 
 ---
 
