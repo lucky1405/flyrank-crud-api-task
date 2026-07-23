@@ -83,8 +83,12 @@ def create_task_db(title : str):
     cursor = conn.cursor()
 
     cursor.execute(
-        "insert into tasks (title,done) values (%s,%s) RETURNING *",
-        (title,False)
+        """
+        INSERT INTO tasks (title, done)
+        VALUES (%s, %s)
+        RETURNING *
+        """,
+        (title, False)
     )
     row = cursor.fetchone()
     conn.commit()
@@ -128,7 +132,7 @@ def delete_task_db(task_id : int):
     cursor = conn.cursor()
 
     cursor.execute(
-        "delete from tasks where id = %s",
+        "DELETE FROM tasks WHERE id = %s",
         (task_id,)
     )
     deleted = cursor.rowcount

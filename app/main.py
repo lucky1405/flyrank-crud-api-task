@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from app.database import initialize_database, get_all_tasks, get_task_by_id, create_task_db, update_task_db, delete_task_db
+from fastapi import Response
+
 
 app = FastAPI(
     title="FlyRank Task API",
@@ -157,3 +159,5 @@ def delete_task(id: int):
             status_code=404,
             detail=f"Task {id} not found"
         )
+
+    return Response(status_code=204)
