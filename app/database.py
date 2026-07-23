@@ -1,12 +1,17 @@
-import sqlite3
-from pathlib import Path
+import os
+import psycopg
+from psycopg.rows import dict_row
+from dotenv import load_dotenv
 
-DB_PATH = Path(__file__).parent / "tasks.db"
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 def get_connection():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
+    return psycopg.connect(
+        DATABASE_URL,
+        row_factory=dict_row
+    )
 
 def initialize_database():
     conn = get_connection()
@@ -14,22 +19,22 @@ def initialize_database():
 
     cursor.execute("""
     create table if not exists tasks (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         title TEXT NOT NULL,
-        done INTEGER NOT NULL DEFAULT 0                   
+        done BOOLEAN NOT NULL DEFAULT FALSE       
     )
     """)
 
-    cursor.execute("SELECT COUNT(*) FROM tasks")
-    count = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(*) AS count FROM tasks")
+    count = cursor.fetchone()["count"]  
 
     if count == 0:
         cursor.executemany(
-            "INSERT INTO tasks (title, done) VALUES (?, ?)",
+            "INSERT INTO tasks (title, done) VALUES (%s, %s)",
             [
-                ("Learn FastAPI", 0),
-                ("Connect SQLite", 0),
-                ("Complete FlyRank Assignment", 0),
+                ("Learn FastAPI", False),
+                ("Connect SQLite", False),
+                ("Complete FlyRank Assignment", False),
             ],
         )
 
@@ -52,11 +57,11 @@ def get_all_tasks():
         for row in rows
     ]
 
-def get_task_by_id(task_id : id) :
+def get_task_by_id(task_id : int) :
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("select * from tasks where id = ?", (task_id,))
+    cursor.execute("select * from tasks where id = %s", (task_id,))
 
     row = cursor.fetchone()
     conn.close()
@@ -75,23 +80,14 @@ def create_task_db(title : str):
     cursor = conn.cursor()
 
     cursor.execute(
-        "insert into tasks (title,done) values (?,?)",
-        (title,0)
-    )
-    task_id = cursor.lastrowid
-    conn.commit()
-    cursor.execute(
-        "select * from tasks where id = ?",
-        (task_id,)
+        "insert into tasks (title,done) values (%s,%s) RETURNING *",
+        (title,False)
     )
     row = cursor.fetchone()
+    conn.commit()
     conn.close()
 
-    return {
-        "id": row["id"],
-        "title": row["title"],
-        "done": bool(row["done"])
-    }
+    return row
 
 def update_task_db(task_id : int, title : str, done : bool):
     conn = get_connection()
@@ -100,10 +96,10 @@ def update_task_db(task_id : int, title : str, done : bool):
     cursor.execute(
          """
         UPDATE tasks
-        SET title = ?, done = ?
-        WHERE id = ?
+        SET title = %s, done = %s
+        WHERE id = %s
         """,
-        (title, int(done), task_id)
+        (title, done, task_id)
     )
 
     if cursor.rowcount == 0:
@@ -112,7 +108,7 @@ def update_task_db(task_id : int, title : str, done : bool):
     
     conn.commit()
     cursor.execute(
-        "select * from tasks where id = ?",
+        "select * from tasks where id = %s",
         (task_id,)
     )
     row = cursor.fetchone()
@@ -129,7 +125,7 @@ def delete_task_db(task_id : int):
     cursor = conn.cursor()
 
     cursor.execute(
-        "delete from tasks where id = ?",
+        "delete from tasks where id = %s",
         (task_id,)
     )
     deleted = cursor.rowcount
