@@ -45,7 +45,7 @@ def get_all_tasks():
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("select * from tasks")
+    cursor.execute("SELECT * FROM tasks")
     rows = cursor.fetchall()
     conn.close()
     return [
@@ -61,7 +61,10 @@ def get_task_by_id(task_id : int) :
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("select * from tasks where id = %s", (task_id,))
+    cursor.execute(
+    "SELECT * FROM tasks WHERE id = %s",
+    (task_id,)
+)
 
     row = cursor.fetchone()
     conn.close()
