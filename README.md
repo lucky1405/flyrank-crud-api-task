@@ -165,13 +165,13 @@ your tasks remain available when you start the application again.
 
 # Database Screenshot
 
-![Database](images/databases.png)
+![Database](app/images/databases.png)
 
 ---
 
 # Swagger UI
 
-![Swagger](images/swagger-ui.png)
+![Swagger](app/images/swagger-ui.png)
 
 ---
 
